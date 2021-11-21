@@ -7,40 +7,14 @@ import tkinter as ttk
 from mysql import connector
 from collections import deque
 from PIL import Image, ImageTk
-# cnx = connector.connect(user='root', password='comp420', host='54.174.186.225',
-# database='PROJECTDB')
-# cursor = cnx.cursor()
-# query = ("SELECT PROJECT_MANAGER FROM PROJECT LIMIT 2")
-# cursor.execute(query)
-# projectManager1 = ''
-# for pm in cursor:
-#     projectManager1=pm
-#     print("{}\n", pm)
-# cnx.close()
-# HEIGHT = 300
-# WIDTH = 500
-# root = ttk.Tk()
-# canvas = ttk.Canvas(root, height=HEIGHT, width=WIDTH)
-# canvas.pack()
-# frame = ttk.Frame(root, bg='#80c1ff')
-# frame.place(relwidth=1, relheight=1)
-# button = ttk.Button(frame, text="Test button")
-# #button.pack(side='left', fill='both', expand=True)
-# # ttk.Button(root, text="Hello World").grid()
-# #button.grid(row=0, column=0)
-# button.place(relx=0, rely=0, relwidth=0.25, relheight=0.25)
-# label = ttk.Label(frame, text=pm, bg='yellow')
-# #label.pack(side='left', fill='both')
-# #label.grid(row=0, column=1)
-# label.place(relx=0.3, rely=0, relwidth=0.45, relheight=0.25)
-# entry = ttk.Entry(frame, bg='green')
-# #entry.pack()
-# #entry.grid(row=1, column=2)
-# entry.place(relx=0.8, rely=0, relwidth=0.2, relheight=0.25)
-# root.mainloop()
-# this is where i start my program
 IMAGE_PATH = '/home/supercoolhackker/PycharmProjects/420Lab10/venv/SQL/guiSQL/7ihdbEc.jpg'
 WIDTH, HEIGTH = 900, 1700
+userName =""
+password =""
+host =""
+database = ""
+
+
 def DeleteSelection():
     print("BYE, BYE")
 def CreateTable():
@@ -200,18 +174,88 @@ def homePage():
         count += 1
     # allocButton(queue)
     root.mainloop()
+def signInfo(usrText,passText,hostText,databaseText,root):
+    global userName, password,host,database
+    userName = usrText.get(1.0, "end-1c")
+    password = passText.get(1.0,"end-1c")
+    host = hostText.get(1.0,"end-1c")
+    database = databaseText.get(1.0,"end-1c")
+    root.destroy()
+    #return usr,ppass,host,database
+def loginPage(): #TODO
+    HEIGHT = 900
+    WIDTH = 1700
+    #local vars
+    rx = 0.2
+    ry = 0.3
+    rwidth = 0.4
+    rheight = 0.07
+    root = ttk.Tk()
+    canvas = ttk.Canvas(root, height=HEIGHT, width=WIDTH)
+    canvas.pack()
+    frame = ttk.Frame(root, bg='#80c1ff')
+    frame.place(relwidth=1, relheight=1)
+    # label for databes in
+    label = ttk.Label(frame, text="Please sign in to MySQL: ", bg='purple')
+    label.pack(side='left', fill='both')
+    label.grid(row=0, column=1)
+    label.place(relx=0.2, rely=0.2, relwidth=0.18, relheight=0.07)
 
-def loginPage():
-    return 1
+    # User Text
+    usrText = ttk.Text(root, height=1, width=30)
+    usrText.pack()
+    usrText.place(relx=0.5, rely=0.28)
+    label = ttk.Label(frame, text="UserName: ", bg='purple')
+    label.pack(side='left', fill='both')
+    label.grid(row=0, column=1)
+    label.place(relx=0.45, rely=0.28, relwidth=0.05, relheight=0.02)
+    # Password Text
+    passText = ttk.Text(root, height=1, width=30)
+    passText.pack()
+    passText.place(relx=0.5, rely=0.34)
+    label = ttk.Label(frame, text="Password: ", bg='purple')
+    label.pack(side='left', fill='both')
+    label.grid(row=0, column=1)
+    label.place(relx=0.45, rely=0.34, relwidth=0.05, relheight=0.02)
+    # Host Text
+    hostText = ttk.Text(root, height=1, width=30)
+    hostText.pack()
+    hostText.place(relx=0.5, rely=0.38)
+    label = ttk.Label(frame, text="Host: ", bg='purple')
+    label.pack(side='left', fill='both')
+    label.grid(row=0, column=1)
+    label.place(relx=0.45, rely=0.38, relwidth=0.05, relheight=0.02)
+    # database Text
+    databaseText = ttk.Text(root, height=1, width=30)
+    databaseText.pack()
+    databaseText.place(relx=0.5, rely=0.42)
+    label = ttk.Label(frame, text="Database: ", bg='purple')
+    label.pack(side='left', fill='both')
+    label.grid(row=0, column=1)
+    label.place(relx=0.45, rely=0.42, relwidth=0.05, relheight=0.02)
+    #print what the user typed
+
+    #Add dropr or cancel buttons
+    signInBtn =ttk.Button(frame, text="Sign In", bg='green', command=lambda :signInfo(usrText,passText,hostText,databaseText,root))
+    signInBtn.pack(side='left', fill='both')
+    signInBtn.grid(row=0, column=0)
+    signInBtn.place(relx=0.55, rely=0.5, relwidth=0.07, relheight=0.07)
+    root.mainloop()
+
 if __name__ == '__main__':
     HEIGHT = 700
     WIDTH = 700
-    cnx = connector.connect(user='root', password='raspberry', host='192.168.50.48',
-    database='Passwds')
+    #the first login page
+    loginPage()
+    print(userName+password+host+database)
+    cnx = connector.connect(user=userName, password=password, host=host,
+    database=database)
+    # cnx = connector.connect(user='root', password='comp420', host='54.174.186.225',
+    # database='imdb')
     cursor = cnx.cursor(buffered=True)
     #query to show databeases
-    # query = ("SHOW TABLES;")
-    # cursor.execute(query)
+    query = ("SHOW TABLES;")
+    cursor.execute(query)
     homePage()
-    cnx.close()
+    #cnx.close()
 
