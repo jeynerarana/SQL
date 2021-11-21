@@ -25,6 +25,7 @@ def connectToDatabase():
     print(usr_file)
     with open(usr_file) as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
+        # Please don't forget to ignore the first line
         for row in csv_reader:
             query = ("INSERT INTO "+usrInput+" VALUES("+str(row)[1:-1]+")")
             try:
