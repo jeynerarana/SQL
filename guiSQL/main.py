@@ -9,18 +9,35 @@ from collections import deque
 from PIL import Image, ImageTk
 IMAGE_PATH = '/home/supercoolhackker/PycharmProjects/420Lab10/venv/SQL/guiSQL/7ihdbEc.jpg'
 WIDTH, HEIGTH = 900, 1700
+# Variables for login
 userName =""
 password =""
 host =""
 database = ""
 
 
-def DeleteSelection():
-    print("BYE, BYE")
+def DeleteSelection(root,tables):
+    #destroy the previuos page
+    root.destroy()
+    query = ("DROP TABLE "+str(tables)[2:-3])
+    cursor.execute(query)
+    homePage()
+
 def CreateTable():
     return 0
-def ReadTable(table):
-    print(table)
+def ReadTable(root,table,rx,ry,rwidth,rheight,count):
+    for pm in table:
+            print(range(len(pm)))
+            for c in range(len(pm)):
+                dropText = ttk.Text(root, height=2, width=30)
+                dropText.pack(side='left', fill='x')
+                dropText.insert(ttk.END, pm[c])
+                dropText.place(relx=rx, rely=ry, relwidth=rwidth/len(pm), relheight=rheight)
+
+                rx += 0.2
+            rx = 0.1
+            ry += 0.1
+    count += 5
 def UpdateTable():
     return 0
 def DeleteTable(tables, root,frame,canvas):
@@ -43,11 +60,11 @@ def DeleteTable(tables, root,frame,canvas):
     label.grid(row=0, column=1)
     label.place(relx=0.2, rely=0.2, relwidth=0.18, relheight=0.07)
     #Add dropr or cancel buttons
-    cancelBtn =ttk.Button(frame, text="Cancel", bg='green', command=lambda: allocButton(tables, root, frame, canvas))
+    cancelBtn =ttk.Button(frame, text="Cancel", bg='green', command=lambda: allocButton(tables, root, frame, canvas,5))
     cancelBtn.pack(side='left', fill='both')
     cancelBtn.grid(row=0, column=0)
     cancelBtn.place(relx=0.355, rely=0.5, relwidth=0.07, relheight=0.07)
-    dropBtn = ttk.Button(frame, text="Drop", bg='red', command=lambda: backToHome(root))
+    dropBtn = ttk.Button(frame, text="Drop", bg='red', command=lambda: DeleteSelection(root,tables))
     dropBtn.pack(side='left', fill='both')
     dropBtn.grid(row=0, column=0)
     dropBtn.place(relx=0.55, rely=0.5, relwidth=0.07, relheight=0.07)
@@ -60,7 +77,7 @@ def DeleteTable(tables, root,frame,canvas):
     count = 0
     # allocButton(queue)
     ## execute query
-def allocButton(tables, prevroot,frame,canvas):
+def allocButton(tables, prevroot,frame,canvas,prevcount):
     # destroys prevoius root
     prevroot.destroy()
     HEIGHT = 900
@@ -81,7 +98,7 @@ def allocButton(tables, prevroot,frame,canvas):
     label.grid(row=0, column=1)
     label.place(relx=0.1, rely=0.2, relwidth=0.4, relheight=0.07)
     #counts the loop
-    count = 0
+    count = prevcount
     # buttons for browse
     queuestr = "Browse"
     # allocButton(queue)
@@ -90,14 +107,12 @@ def allocButton(tables, prevroot,frame,canvas):
     ## execute query
     query = ("SELECT * FROM "+str(tables)[2:-3])
     cursor.execute(query)
-    records = cursor.fetchmany(5)
+    records = cursor.fetchmany(count)
+    #ReadTable(root, records,rx,ry, rwidth,rheight,count)
+    records = records[count-5:count]
     for pm in records:
             print(range(len(pm)))
             for c in range(len(pm)):
-                # label = ttk.Label(frame, text=pm[c], bg='white')
-                # label.pack(side='left', fill='x')
-                # label.grid(row=0, column=1)
-                # label.place(relx=rx, rely=ry, relwidth=rwidth/len(pm), relheight=rheight)
                 dropText = ttk.Text(root, height=2, width=30)
                 dropText.pack(side='left', fill='x')
                 dropText.insert(ttk.END, pm[c])
@@ -106,18 +121,25 @@ def allocButton(tables, prevroot,frame,canvas):
                 rx += 0.2
             rx = 0.1
             ry += 0.1
-            count +=1
-        # if count == 5:
-        #     break
+    print(records[count-5:count])
+    # count += 5
     #Make the back button
     backBtn =ttk.Button(frame, text="Back", bg='grey', command=lambda: backToHome(root))
     backBtn.pack(side='left', fill='both')
     backBtn.grid(row=0, column=0)
     backBtn.place(relx=0.1, rely=0.1, relwidth=0.07, relheight=0.07)
+    # Make the Next Button
+    nextBtn = ttk.Button(frame, text =">>", bg="grey", command=lambda c=count+5 :allocButton(tables, root,frame,canvas,c))
+    nextBtn.pack(side='left', fill='both')
+    nextBtn.grid(row=0, column=0)
+    nextBtn.place(relx=0.875, rely=0.1, relwidth=0.07, relheight=0.07)
+    # Make the Next Button
+    # TODO
+    nextBtn = ttk.Button(frame, text ="<<", bg="grey", command=lambda:backToHome(root))
+    nextBtn.pack(side='left', fill='both')
+    nextBtn.grid(row=0, column=0)
+    nextBtn.place(relx=0.805, rely=0.1, relwidth=0.07, relheight=0.07)
 
-    # labels for first buttons
-#    root.mainloop()
-#    cnx.close()
 def backToHome(root):
     root.destroy()
     homePage()
@@ -155,9 +177,8 @@ def homePage():
         label.grid(row=0, column=1)
         label.place(relx=rx, rely=ry, relwidth=rwidth, relheight=rheight)
         # Declaring deque
-        # queue.append(ttk.Button(frame, text=queuestr, bg='red', command= lambda j=pm:allocButton(j)))
         # for browsing button
-        queue = deque([ttk.Button(frame, text="Browse", bg='green', command=lambda j =pm: allocButton(j,root,frame,canvas))])
+        queue = deque([ttk.Button(frame, text="Browse", bg='green', command=lambda j =pm: allocButton(j,root,frame,canvas,5))])
         queue[0].pack(side='left', fill='both')
         queue[0].grid(row=0, column=0)
         queue[0].place(relx=rx + 0.45, rely=ry, relwidth=(rwidth / 3), relheight=rheight)
@@ -173,15 +194,69 @@ def homePage():
         ry += 0.1
         count += 1
     # allocButton(queue)
+    #Make the back button
+    backBtn =ttk.Button(frame, text="Back", bg='grey', command=lambda: goToDB(root))
+    backBtn.pack(side='left', fill='both')
+    backBtn.grid(row=0, column=0)
+    backBtn.place(relx=0.1, rely=0.1, relwidth=0.07, relheight=0.07)
     root.mainloop()
+def setDB(db,root):
+    root.destroy()
+    global database
+    if database =="":
+        database =str(db)[2:-3]
+    if database =="NA":
+        database = str(db)[2:-3]
+        cnx = connector.connect(user=userName, password=password, host=host,database=str(db)[2:-3])
+        cursor = cnx.cursor(buffered=True)
+        # query to show databeases
+        query = ("SHOW TABLES;")
+        # query =("show databases;")
+        cursor.execute(query)
+        homePage()
+        print(database)
+def goToDB(root):
+    global database
+    root.destroy()
+    database = "NA"
+    chooseDB()
+def chooseDB():
+    # execute quey
+    HEIGHT = 900
+    WIDTH = 1700
+    #local vars
+    rx = 0.2
+    ry = 0.3
+    rwidth = 0.4
+    rheight = 0.07
+    root = ttk.Tk()
+    canvas = ttk.Canvas(root, height=HEIGHT, width=WIDTH)
+    canvas.pack()
+    frame = ttk.Frame(root, bg='#80c1ff')
+    frame.place(relwidth=1, relheight=1)
+    cnx = connector.connect(user=userName, password=password, host=host)
+    cursor = cnx.cursor(buffered=True)
+    query = ("SHOW DATABASES;")
+    cursor.execute(query)
+    for pm in cursor:
+        # Declaring deque
+        # for browsing button
+        queue = deque([ttk.Button(frame, text=pm, bg='green', command=lambda i =pm:setDB(i,root))])
+        queue[0].pack(side='left', fill='both')
+        queue[0].grid(row=0, column=0)
+        queue[0].place(relx=rx + 0.45, rely=ry, relwidth=(rwidth / 3), relheight=rheight)
+        queue.append(queue[0])
+        ry += 0.1
+
 def signInfo(usrText,passText,hostText,databaseText,root):
     global userName, password,host,database
     userName = usrText.get(1.0, "end-1c")
     password = passText.get(1.0,"end-1c")
     host = hostText.get(1.0,"end-1c")
-    database = databaseText.get(1.0,"end-1c")
+    if (databaseText.get(1.0,"end-1c")==""):
+        chooseDB()
+    else:database = databaseText.get(1.0,"end-1c")
     root.destroy()
-    #return usr,ppass,host,database
 def loginPage(): #TODO
     HEIGHT = 900
     WIDTH = 1700
@@ -199,7 +274,7 @@ def loginPage(): #TODO
     label = ttk.Label(frame, text="Please sign in to MySQL: ", bg='purple')
     label.pack(side='left', fill='both')
     label.grid(row=0, column=1)
-    label.place(relx=0.2, rely=0.2, relwidth=0.18, relheight=0.07)
+    label.place(relx=0.2, rely=0.2, relwidth=0.20, relheight=0.07)
 
     # User Text
     usrText = ttk.Text(root, height=1, width=30)
@@ -208,7 +283,7 @@ def loginPage(): #TODO
     label = ttk.Label(frame, text="UserName: ", bg='purple')
     label.pack(side='left', fill='both')
     label.grid(row=0, column=1)
-    label.place(relx=0.45, rely=0.28, relwidth=0.05, relheight=0.02)
+    label.place(relx=0.40, rely=0.28, relwidth=0.09, relheight=0.025)
     # Password Text
     passText = ttk.Text(root, height=1, width=30)
     passText.pack()
@@ -216,7 +291,7 @@ def loginPage(): #TODO
     label = ttk.Label(frame, text="Password: ", bg='purple')
     label.pack(side='left', fill='both')
     label.grid(row=0, column=1)
-    label.place(relx=0.45, rely=0.34, relwidth=0.05, relheight=0.02)
+    label.place(relx=0.40, rely=0.34, relwidth=0.09, relheight=0.025)
     # Host Text
     hostText = ttk.Text(root, height=1, width=30)
     hostText.pack()
@@ -224,7 +299,7 @@ def loginPage(): #TODO
     label = ttk.Label(frame, text="Host: ", bg='purple')
     label.pack(side='left', fill='both')
     label.grid(row=0, column=1)
-    label.place(relx=0.45, rely=0.38, relwidth=0.05, relheight=0.02)
+    label.place(relx=0.40, rely=0.38, relwidth=0.09, relheight=0.025)
     # database Text
     databaseText = ttk.Text(root, height=1, width=30)
     databaseText.pack()
@@ -232,11 +307,11 @@ def loginPage(): #TODO
     label = ttk.Label(frame, text="Database: ", bg='purple')
     label.pack(side='left', fill='both')
     label.grid(row=0, column=1)
-    label.place(relx=0.45, rely=0.42, relwidth=0.05, relheight=0.02)
+    label.place(relx=0.40, rely=0.42, relwidth=0.09, relheight=0.025)
     #print what the user typed
 
-    #Add dropr or cancel buttons
-    signInBtn =ttk.Button(frame, text="Sign In", bg='green', command=lambda :signInfo(usrText,passText,hostText,databaseText,root))
+    #Add sign in btn
+    signInBtn =ttk.Button(frame, text="Sign In", bg='green', command=lambda:signInfo(usrText,passText,hostText,databaseText,root))
     signInBtn.pack(side='left', fill='both')
     signInBtn.grid(row=0, column=0)
     signInBtn.place(relx=0.55, rely=0.5, relwidth=0.07, relheight=0.07)
@@ -250,12 +325,14 @@ if __name__ == '__main__':
     print(userName+password+host+database)
     cnx = connector.connect(user=userName, password=password, host=host,
     database=database)
-    # cnx = connector.connect(user='root', password='comp420', host='54.174.186.225',
-    # database='imdb')
+    # cnx = connector.connect(user='root', password='comp420', host='54.174.186.225',database='imdb')
     cursor = cnx.cursor(buffered=True)
     #query to show databeases
     query = ("SHOW TABLES;")
+    #query =("show databases;")
     cursor.execute(query)
+    # for (databases) in cursor:
+    #     print(databases[0])
     homePage()
     #cnx.close()
 
