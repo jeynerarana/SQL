@@ -264,7 +264,7 @@ def homePage():
     createTableBttn = ttk.Button(frame, text="Create New Table",bg='cyan', command=lambda:CreateTable(root))
     createTableBttn.pack(side='left', fill='both')
     createTableBttn.grid(row=0, column=0)
-    createTableBttn.place(relx=0.9, rely=0.1, relwidth=0.1, relheight=0.08)
+    createTableBttn.place(relx=0.7, rely=0.1, relwidth=0.2, relheight=0.08)
     for pm in cursor:
         label = ttk.Label(frame, text=pm, bg='white')
         label.pack(side='left', fill='both')
