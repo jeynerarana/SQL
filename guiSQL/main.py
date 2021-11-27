@@ -6,7 +6,7 @@
 import tkinter as ttk
 from mysql import connector
 from collections import deque
-from PIL import Image, ImageTk
+# from PIL import Image, ImageTk
 IMAGE_PATH = '/home/supercoolhackker/PycharmProjects/420Lab10/venv/SQL/guiSQL/7ihdbEc.jpg'
 WIDTH, HEIGTH = 900, 1700
 # Variables for login
@@ -22,9 +22,92 @@ def DeleteSelection(root,tables):
     query = ("DROP TABLE "+str(tables)[2:-3])
     cursor.execute(query)
     homePage()
+def CancelCreate(root):
+    backToHome(root)
+def ConfirmCreate(root, dbTable,attrName,attrType,attrCollation):
+    table = dbTable.get(1.0,"end-1c")
+    name = attrName.get(1.0,"end-1c")
+    type = attrType.get(1.0, "end-1c")
+    collation = attrCollation.get(1.0, "end-1c")
 
-def CreateTable():
-    return 0
+    row1 = ("CREATE TABLE "+table+" ("+name+" "+type+");")
+    cursor.execute(row1)
+    backToHome(root)
+
+def CreateTable(prevroot):
+    prevroot.destroy()
+    HEIGHT = 900
+    WIDTH = 1700
+    #local vars
+    rx = 0.2
+    ry = 0.3
+    rwidth = 0.4
+    rheight = 0.07
+    root = ttk.Tk()
+    canvas = ttk.Canvas(root, height=HEIGHT, width=WIDTH)
+    canvas.pack()
+    frame = ttk.Frame(root, bg='#80c1ff')
+    frame.place(relwidth=1, relheight=1)
+    # label for databes in
+    label = ttk.Label(frame, text="Selected Database :"+database, bg='purple')
+    label.pack(side='left', fill='both')
+    label.grid(row=0, column=1)
+    label.place(relx=0.2, rely=0.2, relwidth=0.18, relheight=0.07)
+
+    # add Text/Label for table name
+    tableNameText = ttk.Text(root, height=1, width=30)
+    tableNameText.pack()
+    tableNameText.place(relx=0.35, rely=0.28)
+
+    #Name
+    attrName = ttk.Text(root, height=1, width=20)
+    attrName.pack()
+    attrName.place(relx=0.25, rely=0.40)
+
+    attrNamelabel= ttk.Label(frame, text="Name: ", bg='grey')
+    attrNamelabel.pack(side='left', fill='both')
+    attrNamelabel.grid(row=0, column=1)
+    attrNamelabel.place(relx=0.25, rely=0.35, relwidth=0.08, relheight=0.03)
+
+    #Type
+    attrType = ttk.Text(root, height=1, width=20)
+    attrType.pack()
+    attrType.place(relx=0.40, rely=0.40)
+
+    attrTypelabel= ttk.Label(frame, text="Type: ", bg='grey')
+    attrTypelabel.pack(side='left', fill='both')
+    attrTypelabel.grid(row=0, column=1)
+    attrTypelabel.place(relx=0.40, rely=0.35, relwidth=0.08, relheight=0.03)
+    #Collation
+    attrCollation = ttk.Text(root, height=1, width=20)
+    attrCollation.pack()
+    attrCollation.place(relx=0.55, rely=0.40)
+
+    attrCollationlabel= ttk.Label(frame, text="Collation: ", bg='grey')
+    attrCollationlabel.pack(side='left', fill='both')
+    attrCollationlabel.grid(row=0, column=1)
+    attrCollationlabel.place(relx=0.55, rely=0.35, relwidth=0.08, relheight=0.03)
+
+    # This label will match the table name text
+    tableNamelabel= ttk.Label(frame, text="Table name: ", bg='white')
+    tableNamelabel.pack(side='left', fill='both')
+    tableNamelabel.grid(row=0, column=1)
+    tableNamelabel.place(relx=0.23, rely=0.28, relwidth=0.09, relheight=0.03)
+    #counts the loop
+    count = 0
+    # allocButton(queue)
+    #These last Texts will be control the tabel attributes
+
+    #Add dropr or cancel buttons
+    cancelBtn =ttk.Button(frame, text="Cancel", bg='red',command=lambda:CancelCreate(root))
+    cancelBtn.pack(side='left', fill='both')
+    cancelBtn.grid(row=0, column=0)
+    cancelBtn.place(relx=0.355, rely=0.8, relwidth=0.07, relheight=0.07)
+    dropBtn = ttk.Button(frame, text="ADD", bg='green', command = lambda:ConfirmCreate(root,tableNameText,attrName,attrType,attrCollation))
+    dropBtn.pack(side='left', fill='both')
+    dropBtn.grid(row=0, column=0)
+    dropBtn.place(relx=0.55, rely=0.8, relwidth=0.07, relheight=0.07)
+
 def ReadTable(root,table,rx,ry,rwidth,rheight,count):
     for pm in table:
             print(range(len(pm)))
@@ -55,7 +138,7 @@ def DeleteTable(tables, root,frame,canvas):
     frame = ttk.Frame(root, bg='#80c1ff')
     frame.place(relwidth=1, relheight=1)
     # label for databes in
-    label = ttk.Label(frame, text="Selected Database :", bg='purple')
+    label = ttk.Label(frame, text="Selected Table :"+str(tables)[2:-3], bg='purple')
     label.pack(side='left', fill='both')
     label.grid(row=0, column=1)
     label.place(relx=0.2, rely=0.2, relwidth=0.18, relheight=0.07)
@@ -92,11 +175,16 @@ def allocButton(tables, prevroot,frame,canvas,prevcount):
     canvas.pack()
     frame = ttk.Frame(root, bg='#80c1ff')
     frame.place(relwidth=1, relheight=1)
-    # label for databes in
-    label = ttk.Label(frame, text="Selected Table :"+str(tables)[2:-3], bg='purple')
+    #Label fro chosen database
+    labeldb = ttk.Label(frame, text="Selected Database :"+database, bg='purple')
+    labeldb.pack(side='left', fill='both')
+    labeldb.grid(row=0, column=1)
+    labeldb.place(relx=0.1, rely=0.20, relwidth=0.2, relheight=0.05)
+    # label for table
+    label = ttk.Label(frame, text="Selected Table :"+str(tables)[2:-3], bg='yellow')
     label.pack(side='left', fill='both')
     label.grid(row=0, column=1)
-    label.place(relx=0.1, rely=0.2, relwidth=0.4, relheight=0.07)
+    label.place(relx=0.1, rely=0.25, relwidth=0.2, relheight=0.03)
     #counts the loop
     count = prevcount
     # buttons for browse
@@ -162,7 +250,8 @@ def homePage():
     frame = ttk.Frame(root, bg='#80c1ff')
     frame.place(relwidth=1, relheight=1)
     # label for databes in
-    label = ttk.Label(frame, text="Selected Database : imdb", bg='purple')
+    # Fixe the static variable 'imdb'
+    label = ttk.Label(frame, text="Selected Database :"+database, bg='purple')
     label.pack(side='left', fill='both')
     label.grid(row=0, column=1)
     label.place(relx=0.2, rely=0.2, relwidth=0.3, relheight=0.07)
@@ -171,6 +260,11 @@ def homePage():
     # execute quey
     query = ("SHOW TABLES;")
     cursor.execute(query)
+    # making a button for creating new Table
+    createTableBttn = ttk.Button(frame, text="Create New Table",bg='cyan', command=lambda:CreateTable(root))
+    createTableBttn.pack(side='left', fill='both')
+    createTableBttn.grid(row=0, column=0)
+    createTableBttn.place(relx=0.9, rely=0.1, relwidth=0.07, relheight=0.07)
     for pm in cursor:
         label = ttk.Label(frame, text=pm, bg='white')
         label.pack(side='left', fill='both')
@@ -220,33 +314,50 @@ def goToDB(root):
     root.destroy()
     database = "NA"
     chooseDB()
+# This page display the available databases if you don;t type a database
 def chooseDB():
-    # execute quey
-    HEIGHT = 900
-    WIDTH = 1700
-    #local vars
-    rx = 0.2
-    ry = 0.3
-    rwidth = 0.4
-    rheight = 0.07
-    root = ttk.Tk()
-    canvas = ttk.Canvas(root, height=HEIGHT, width=WIDTH)
-    canvas.pack()
-    frame = ttk.Frame(root, bg='#80c1ff')
-    frame.place(relwidth=1, relheight=1)
-    cnx = connector.connect(user=userName, password=password, host=host)
-    cursor = cnx.cursor(buffered=True)
-    query = ("SHOW DATABASES;")
-    cursor.execute(query)
-    for pm in cursor:
-        # Declaring deque
-        # for browsing button
-        queue = deque([ttk.Button(frame, text=pm, bg='green', command=lambda i =pm:setDB(i,root))])
-        queue[0].pack(side='left', fill='both')
-        queue[0].grid(row=0, column=0)
-        queue[0].place(relx=rx + 0.45, rely=ry, relwidth=(rwidth / 3), relheight=rheight)
-        queue.append(queue[0])
-        ry += 0.1
+    try:
+        # execute quey
+        HEIGHT = 900
+        WIDTH = 1700
+        # local vars
+        rx = 0.35
+        ry = 0.3
+        rwidth = 0.4
+        rheight = 0.07
+        root = ttk.Tk()
+        canvas = ttk.Canvas(root, height=HEIGHT, width=WIDTH)
+        canvas.pack()
+        frame = ttk.Frame(root, bg='#80c1ff')
+        frame.place(relwidth=1, relheight=1)
+        cnx = connector.connect(user=userName, password=password, host=host)
+        cursor = cnx.cursor(buffered=True)
+        query = ("SHOW DATABASES;")
+        cursor.execute(query)
+        for pm in cursor:
+            # # Declaring deque
+            # # for browsing button
+            # queue = deque([ttk.Button(frame, text=pm, bg='green', command=lambda i =pm:setDB(i,root))])
+            # queue[0].pack(side='left', fill='both')
+            # queue[0].grid(row=0, column=0)
+            # queue[0].place(relx=rx + 0.45, rely=ry, relwidth=(rwidth / 3), relheight=rheight)
+            # queue.append(queue[0])
+            # ry += 0.1
+
+            for c in range(len(pm)):
+                # Declaring deque
+                # for browsing button
+                queue = deque([ttk.Button(frame, text=pm, bg='green', command=lambda i=pm: setDB(i, root))])
+                queue[0].pack(side='left', fill='both')
+                queue[0].grid(row=0, column=0)
+                queue[0].place(relx=rx, rely=ry, relwidth=(rwidth /len(pm)), relheight=rheight)
+                queue.append(queue[0])
+                rx += 0.2
+            rx = 0.35
+            ry += 0.1
+    except(connector.errors.InterfaceError, connector.Warning) as e:
+        print("Error signing in")
+        return
 
 def signInfo(usrText,passText,hostText,databaseText,root):
     global userName, password,host,database
@@ -323,8 +434,12 @@ if __name__ == '__main__':
     #the first login page
     loginPage()
     print(userName+password+host+database)
-    cnx = connector.connect(user=userName, password=password, host=host,
-    database=database)
+    # Checking if there are errors while connecting with given credentials
+    try:
+        cnx = connector.connect(user=userName, password=password, host=host,
+        database=database)
+    except(connector.errors.DatabaseError, connector.Warning) as e:
+        print("Sorry looks like you have invalid credentials: Please make sure there are no spaces")
     # cnx = connector.connect(user='root', password='comp420', host='54.174.186.225',database='imdb')
     cursor = cnx.cursor(buffered=True)
     #query to show databeases
