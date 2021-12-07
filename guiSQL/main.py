@@ -335,14 +335,6 @@ def chooseDB():
         query = ("SHOW DATABASES;")
         cursor.execute(query)
         for pm in cursor:
-            # # Declaring deque
-            # # for browsing button
-            # queue = deque([ttk.Button(frame, text=pm, bg='green', command=lambda i =pm:setDB(i,root))])
-            # queue[0].pack(side='left', fill='both')
-            # queue[0].grid(row=0, column=0)
-            # queue[0].place(relx=rx + 0.45, rely=ry, relwidth=(rwidth / 3), relheight=rheight)
-            # queue.append(queue[0])
-            # ry += 0.1
 
             for c in range(len(pm)):
                 # Declaring deque
@@ -449,5 +441,4 @@ if __name__ == '__main__':
     # for (databases) in cursor:
     #     print(databases[0])
     homePage()
-    #cnx.close()
 
